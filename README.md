@@ -88,10 +88,10 @@ CODEX_HOME="$HOME/.codex"
 CODEX_BROWSER_PROXY_HOST="127.0.0.1"
 CODEX_BROWSER_PROXY_PORT="7897"
 CODEX_BROWSER_PROXY_PATCH_LABEL="com.example.codex-browser-proxy-patch"
-CODEX_NODE="/Applications/Codex.app/Contents/Resources/node"
+CODEX_NODE="/Applications/Codex.app/Contents/Resources/cua_node/bin/node"
 ```
 
-Only `CODEX_BROWSER_PROXY_PORT` is usually needed.
+Only `CODEX_BROWSER_PROXY_PORT` is usually needed. The installer automatically tries Codex Desktop's current bundled Node.js path, then older bundled Node.js paths, then `node` from your shell `PATH`.
 
 ## Verify Installation
 

@@ -274,11 +274,30 @@ for (const root of roots) {
     /var WA=async\(e,t\)=>\{let r=globalThis\.nodeRepl\?\.fetch;if\(r==null\)throw new Error\(J\("Browser Use cannot determine if this website is allowed\. Please try again later or use another source\."\)\);return r\(e,t\)\}/g,
     "var WA=async(e,t)=>__codexProxyFetch(e,t)",
   );
+  client = client.replace(
+    /var ([A-Za-z_$][\w$]*)=async\(e,t\)=>\{let r=Me\(\)\?\.fetch;if\(r==null\)throw new Error\("browser-client privileged fetch is unavailable"\);return r\(e,t\)\};/g,
+    "var $1=async(e,t)=>__codexProxyFetch(e,t);",
+  );
+  client = client.replace(
+    /var ([A-Za-z_$][\w$]*)=async\(e,t\)=>\{let r=Me\(\)\?\.fetch;if\(r==null\)throw new Error\(Z\("Browser Use cannot determine if this website is allowed\. Please try again later or use another source\."\)\);return r\(e,t\)\};/g,
+    "var $1=async(e,t)=>__codexProxyFetch(e,t);",
+  );
 
-  if (
-    !client.includes("var Yn=__codexProxyFetch;") ||
-    !client.includes("var WA=async(e,t)=>__codexProxyFetch(e,t);")
-  ) {
+  const hasLegacyPatch =
+    client.includes("var Yn=__codexProxyFetch;") &&
+    client.includes("var WA=async(e,t)=>__codexProxyFetch(e,t);");
+  const hasModernPatch = /var [A-Za-z_$][\w$]*=async\(e,t\)=>__codexProxyFetch\(e,t\);/.test(
+    client,
+  );
+  const stillHasUnpatchedFetch =
+    /var [A-Za-z_$][\w$]*=async\(e,t\)=>\{let r=Me\(\)\?\.fetch;if\(r==null\)throw new Error\("browser-client privileged fetch is unavailable"\);return r\(e,t\)\};/.test(
+      client,
+    ) ||
+    /var [A-Za-z_$][\w$]*=async\(e,t\)=>\{let r=Me\(\)\?\.fetch;if\(r==null\)throw new Error\(Z\("Browser Use cannot determine if this website is allowed\. Please try again later or use another source\."\)\);return r\(e,t\)\};/.test(
+      client,
+    );
+
+  if ((!hasLegacyPatch && !hasModernPatch) || stillHasUnpatchedFetch) {
     throw new Error(`Patch did not match expected Browser client patterns: ${clientPath}`);
   }
 

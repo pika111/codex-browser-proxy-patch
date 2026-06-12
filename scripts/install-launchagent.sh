@@ -6,10 +6,30 @@ CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
 PROXY_HOST="${CODEX_BROWSER_PROXY_HOST:-127.0.0.1}"
 PROXY_PORT="${CODEX_BROWSER_PROXY_PORT:-7897}"
 LABEL="${CODEX_BROWSER_PROXY_PATCH_LABEL:-com.example.codex-browser-proxy-patch}"
-CODEX_NODE="${CODEX_NODE:-/Applications/Codex.app/Contents/Resources/node}"
 
-if [[ ! -x "$CODEX_NODE" ]]; then
+if [[ -n "${CODEX_NODE:-}" ]]; then
+  CODEX_NODE_CANDIDATE="$CODEX_NODE"
+else
+  CODEX_NODE_CANDIDATE=""
+  for candidate in \
+    "/Applications/Codex.app/Contents/Resources/cua_node/bin/node" \
+    "/Applications/Codex.app/Contents/Resources/node"
+  do
+    if [[ -x "$candidate" ]]; then
+      CODEX_NODE_CANDIDATE="$candidate"
+      break
+    fi
+  done
+fi
+
+if [[ -z "$CODEX_NODE_CANDIDATE" || ! -x "$CODEX_NODE_CANDIDATE" ]]; then
+  CODEX_NODE_CANDIDATE="$(command -v node || true)"
+fi
+
+if [[ -z "$CODEX_NODE_CANDIDATE" || ! -x "$CODEX_NODE_CANDIDATE" ]]; then
   CODEX_NODE="$(command -v node || true)"
+else
+  CODEX_NODE="$CODEX_NODE_CANDIDATE"
 fi
 
 if [[ -z "$CODEX_NODE" || ! -x "$CODEX_NODE" ]]; then
